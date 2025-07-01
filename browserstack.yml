@@ -1,0 +1,40 @@
+
+userName: vamsikarthikr_4vcWPo
+accessKey: rWV3ybGPisBx5XeY5xNm
+
+projectName: El País Article Scraper
+
+buildName: elpais-scraper-cross-browser-test
+
+buildIdentifier: '#${BUILD_NUMBER}' 
+
+platforms:
+  - os: Windows
+    osVersion: 10
+    browserName: Chrome
+    browserVersion: 120.0
+  - os: OS X
+    osVersion: Monterey
+    browserName: Safari
+    browserVersion: 15.6
+  - deviceName: iPhone 13
+    osVersion: 15
+    browserName: Chromium
+    deviceOrientation: portrait
+  - deviceName: Samsung Galaxy S21
+    osVersion: 11.0
+    browserName: Chrome
+    deviceOrientation: portrait
+  - os: Windows
+    osVersion: 11
+    browserName: Edge
+    browserVersion: 119.0
+
+browserstackLocal: true 
+
+debug: true
+networkLogs: true
+consoleLogs: info 
+
+CUSTOM_TAG_1: "Cross-browser testing for news scraper"
+framework: python
