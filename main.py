@@ -1,5 +1,6 @@
 import time
 import requests
+import json
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from locators import Locators
@@ -12,6 +13,31 @@ def setup_driver():
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     return webdriver.Chrome(options=options)
+
+
+def set_session_name(driver, name):
+    """Set BrowserStack session name for better debugging"""
+    executor_object = {
+        'action': 'setSessionName',
+        'arguments': {
+            'name': name
+        }
+    }
+    browserstack_executor = 'browserstack_executor: {}'.format(json.dumps(executor_object))
+    driver.execute_script(browserstack_executor)
+
+
+def set_session_status(driver, status, reason):
+    """Mark test as passed or failed on BrowserStack"""
+    executor_object = {
+        'action': 'setSessionStatus',
+        'arguments': {
+            'status': status,
+            'reason': reason
+        }
+    }
+    browserstack_executor = 'browserstack_executor: {}'.format(json.dumps(executor_object))
+    driver.execute_script(browserstack_executor)
 
 
 def check_spanish_content(driver):
@@ -30,7 +56,7 @@ def check_spanish_content(driver):
 
 def handle_cookies(driver):
     """Accept cookie consent if banner is present"""
-    time.sleep(2)  # wait for banner to load / we can use wait_till_element_displayed() as well, not implemented yet
+    time.sleep(5)  # wait for banner to load / we can use wait_till_element_displayed() as well, not implemented yet
     
     cookie_button = Locators.COOKIE_ACCEPT_BUTTON.get_element(driver)
     if cookie_button:
@@ -173,11 +199,15 @@ def main():
     driver = setup_driver()
     
     try:
+        # Set BrowserStack session name
+        set_session_name(driver, "El País Opinion Articles Scraper")
+        
         # Scrape articles
         articles = scrape_articles(driver)
         
         if not articles:
             print("No articles scraped. Exiting.")
+            set_session_status(driver, "failed", "No articles were scraped")
             return
 
         print(f"\nSuccessfully scraped {len(articles)} articles")
@@ -213,6 +243,13 @@ def main():
 
         print(f"\nScraping completed successfully!")
         
+        # Mark test as passed on BrowserStack
+        set_session_status(driver, "passed", "Successfully scraped and analyzed El País articles")
+        
+    except Exception as e:
+        print(f"Error during scraping: {e}")
+        set_session_status(driver, "failed", f"Scraping failed: {str(e)}")
+        raise
     finally:
         driver.quit()
 
