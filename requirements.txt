@@ -1,2 +1,3 @@
 selenium
 requests
+browserstack-sdk
